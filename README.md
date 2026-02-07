@@ -27,7 +27,7 @@ manifest:
   projects:
     - name: zmk
       remote: zmkfirmware
-      revision: 0.3
+      revision: v0.3
       import: app/west.yml
     # Add the name of the repository as a project.
     - name: bault-zmk-config
