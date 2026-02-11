@@ -3,52 +3,107 @@
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/outputs.h>
 
+#define DEF 0
+#define LAY1 1
+#define LAY2 2
+#define LAY3 3
+
 / {
-
-    behaviors {
-        hm: homerow_mods {
-            compatible = "zmk,behavior-hold-tap";
-            display-name = "Homerow Mods";
-            bindings = <&kp>, <&kp>;
-
-            #binding-cells = <2>;
-            tapping-term-ms = <200>;
-            quick-tap-ms = <180>;
-            require-prior-idle-ms = <0>;
-            flavor = "tap-preferred";
+    combos {
+        compatible = "zmk,combos";
+        combo_ESC {
+            timeout-ms = <50>;
+            key-positions = <0 1 13>;
+            bindings = <&kp ESC>;
+	};
+    	combo_TAB {
+            timeout-ms = <50>;
+            key-positions = <11 12>;
+            bindings = <&kp TAB>;
         };
     };
+};
 
+/ {
+        behaviors {        
+                hm: homerow_mods {
+            		compatible = "zmk,behavior-hold-tap";
+           		label = "HOMEROW_MODS";
+           		bindings = <&kp>, <&kp>;
+
+		        #binding-cells = <2>;
+		        tapping-term-ms = <200>;
+		        quick-tap-ms = <180>;
+		        require-prior-idle-ms = <0>;
+		        flavor = "tap-preferred";
+               };
+		ly: layers {
+                        compatible = "zmk,behavior-hold-tap";
+                        label = "LAYERS TAP HOLD";
+                        #binding-cells = <2>;
+                        tapping-term-ms = <150>;
+                        quick-tap-ms = <0>;
+                        flavor = "tap-preferred";
+                        bindings = <&mo>, <&to>;
+                };
+	        /omit-if-no-ref/ sl: sticky_layer {
+	            compatible = "zmk,behavior-sticky-key";
+	            #binding-cells = <1>;
+	            release-after-ms = <1000>;
+	            bindings = <&mo>;
+	            quick-release;
+	            display-name = "Sticky Layer";
+		};
+		as: auto_shift {
+	            compatible = "zmk,behavior-hold-tap";
+		    label = "AUTO_SHIFT";
+	            #binding-cells = <2>;
+	            tapping_term_ms = <150>;
+	            quick_tap_ms = <0>;
+	            flavor = "tap-preferred";
+	            bindings = <&kp>, <&kp>;
+	        };
+	};
+};
+
+/ {
 
     keymap {
         compatible = "zmk,keymap";
 
         base {
             bindings = <
-                &kp Q      &kp W      &kp E      &kp R      &kp T      &kp Y      &kp U      &kp I      &kp O      &kp P      &kp LEFT_BRACKET
-                &hm LEFT_CONTROL A  &hm LEFT_ALT S  &hm LGUI D  &hm LEFT_SHIFT F  &kp G      &kp H      &hm RIGHT_SHIFT J  &hm RIGHT_GUI K  &hm LEFT_ALT L  &hm RCTRL SEMICOLON
-                &kp Z      &kp X      &kp C      &kp V      &kp B      &kp N      &kp M      &kp COMMA      &kp PERIOD      &kp SLASH
-                &kp N0      &mo 3      &kp ENTER      &kp SPACE      &kp BACKSPACE      &mo 1      &mo 2      &kp N0
+                &as LS(Q) Q &as LS(W) W &as LS(E) E &as LS(R) R &as LS(T) T &as LS(Y) Y &as LS(U) U &as LS(I) I &as LS(O) O &as LS(P) P &kp BSPC
+                &hm LEFT_CONTROL A   &as LS(S) S &as LS(D) D &as LS(F) F &as LS(G) G &as LS(H) H &as LS(J) J &as LS(K) K &as LS(L) L &hm RIGHT_CONTROL ENTER
+                &mt LSHIFT Z          &as LS(X) X &as LS(C) C &as LS(V) V &as LS(B) B &as LS(N) N &as LS(M) M &as LS(COMMA) COMMA &as LS(PERIOD) PERIOD  &mt RSHIFT SLASH
+                &none       &kp LGUI       &kp LALT         &lt LAY1 SPACE        &kp SPACE        &sl LAY2         &sl LAY3          &none
             >;
         };
-
 
         layer_1 {
             bindings = <
-                &kp N1  &kp N2  &kp N3  &kp N4  &kp N5  &kp N6  &kp N7    &kp N8    &kp N9     &kp N0     &studio_unlock
-                &trans  &trans  &trans  &trans  &trans  &trans  &trans    &kp UP    &kp MINUS  &kp EQUAL
-                &trans  &trans  &trans  &trans  &trans  &trans  &kp LEFT  &kp DOWN  &kp RIGHT  &trans
-                &kp N0   &trans  &trans  &trans  &trans  &trans    &trans &kp N0
+                &as LS(N1) N1 &as LS(N2) N2 &as LS(N3) N3 &as LS(N4) N4 &as LS(N5) N5 &as LS(N6) N6 &as LS(N7) N7 &as LS(N8) N8 &as LS(N9) N9 &as LS(N0) N0 &kp DEL
+                &kp CAPS   &kp C_VOL_UP  &as LS(SEMI) SEMI &as LS(APOS) APOS &as LS(NUBS) NUBS  &none  &none  &as LS(MINUS) MINUS &as LS(EQUAL) EQUAL  &trans
+                &trans     &kp C_VOL_DN  &none     &none     &none     &none  &kp C_MUTE  &as LS(LBKT) LBKT &as LS(RBKT) RBKT   &trans
+                &none      &trans    &trans    &trans    &trans    &trans          &trans      &none
             >;
         };
 
-
-        connectivity {
+        layer_2 {
             bindings = <
-                &trans  &trans  &trans  &trans  &trans  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &bootloader
-                &trans  &trans  &trans  &trans  &trans  &trans        &trans        &trans        &trans        &trans
-                &trans  &trans  &trans  &trans  &trans  &bt BT_CLR    &out OUT_BLE  &out OUT_USB  &out OUT_TOG  &trans
-                &kp N0   &trans  &trans  &trans  &trans        &trans        &trans &kp N0
+                &kp GRAVE  &kp F1  &kp F2  &kp F3  &kp F4  &none  &none  &none  &kp UP  &none  &none
+                &none      &kp F5  &kp F6  &kp F7  &kp F8  &none  &kp PSCRN   &kp LEFT  &kp RIGHT   &trans        
+                &trans     &kp F9  &kp F10  &kp F11  &kp F12  &none    &none   &kp DOWN  &none  &trans
+                &none      &trans    &trans    &trans    &trans    &trans          &trans      &none
+            >;
+        };
+
+        layer_3 {
+            bindings = <
+                &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &none &none &none &kp PG_UP &none &none
+                &bt BT_CLR    &out OUT_BLE  &out OUT_USB  &out OUT_TOG  &none         &none &none   &kp HOME  &kp END   &trans        
+                &bootloader   &none         &none         &none         &none         &none &none   &kp PG_DN &none &trans
+                &none      &trans    &trans    &trans    &trans    &trans          &trans      &none
             >;
         };
     };
